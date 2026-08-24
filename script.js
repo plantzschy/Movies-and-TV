@@ -142,11 +142,15 @@ const n = document.getElementById("next-btn");
 
 start.addEventListener("click", () => {
 
- 
+    land.classList.add("hidden");
 
-land.classList.add("hidden");
+    quiz.classList.remove("hidden");
 
- 
+    initialiseLifelines();
+
+    loadQuestion();
+
+});
 
 function loadQuestion() {
 
