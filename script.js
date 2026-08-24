@@ -140,15 +140,13 @@ const q = document.getElementById("question");
 const a = document.getElementById("answers");
 const n = document.getElementById("next-btn");
 
-const fiftyBtn = document.getElementById("fiftyBtn");
-const phoneBtn = document.getElementById("phoneBtn");
-const audienceBtn = document.getElementById("audienceBtn");
-
 start.addEventListener("click", () => {
-    land.classList.add("hidden");
-    quiz.classList.remove("hidden");
-    loadQuestion();
-});
+
+ 
+
+land.classList.add("hidden");
+
+ 
 
 function loadQuestion() {
 
@@ -233,125 +231,150 @@ function revealAnswer(selected) {
     }
 }
 
-/* 50/50 */
+let fiftyBtn;
+let phoneBtn;
+let audienceBtn;
 
-fiftyBtn.addEventListener("click", () => {
+function initialiseLifelines() {
 
-    if (used5050) return;
+    fiftyBtn = document.getElementById("fiftyBtn");
+    phoneBtn = document.getElementById("phoneBtn");
+    audienceBtn = document.getElementById("audienceBtn");
 
-    used5050 = true;
-    fiftyBtn.disabled = true;
+    console.log("Lifelines initialised");
 
-    const correct = quizData[current].correct;
+    fiftyBtn.addEventListener("click", () => {
 
-    const buttons =
-        document.querySelectorAll(".answer-btn");
+        if (used5050) return;
 
-    let wrong = [];
+        used5050 = true;
+        fiftyBtn.disabled = true;
 
-    buttons.forEach((btn, index) => {
+        const correct = quizData[current].correct;
 
-        if (index !== correct) {
-            wrong.push(index);
+        const buttons =
+            document.querySelectorAll(".answer-btn");
+
+        let wrong = [];
+
+        buttons.forEach((btn, index) => {
+
+            if (index !== correct) {
+                wrong.push(index);
+            }
+
+        });
+
+        wrong.sort(() => Math.random() - 0.5);
+
+        wrong.slice(0, 2).forEach(index => {
+
+            buttons[index].disabled = true;
+            buttons[index].style.opacity = "0.25";
+
+        });
+
+    });
+
+    phoneBtn.addEventListener("click", () => {
+
+        if (usedPhone) return;
+
+        usedPhone = true;
+        phoneBtn.disabled = true;
+
+        const correct =
+            quizData[current].correct;
+
+        const answers =
+            quizData[current].answers;
+
+        let selected;
+
+        if (Math.random() < 0.6) {
+
+            selected = correct;
+
+        } else {
+
+            const wrong =
+                [0, 1, 2, 3].filter(
+                    i => i !== correct
+                );
+
+            selected =
+                wrong[
+                    Math.floor(
+                        Math.random() *
+                        wrong.length
+                    )
+                ];
+
         }
 
-    });
-
-    wrong.sort(() => Math.random() - 0.5);
-
-    wrong.slice(0, 2).forEach(index => {
-
-        buttons[index].disabled = true;
-        buttons[index].style.opacity = "0.25";
+        alert(
+            "📞 Phone a Friend\n\n" +
+            "Mhmm... I think it is " +
+            answers[selected]
+        );
 
     });
 
-});
+    audienceBtn.addEventListener("click", () => {
 
-/* Phone a Friend */
+        if (usedAudience) return;
 
-phoneBtn.addEventListener("click", () => {
+        usedAudience = true;
+        audienceBtn.disabled = true;
 
-    if (usedPhone) return;
+        const answers =
+            quizData[current].answers;
 
-    usedPhone = true;
-    phoneBtn.disabled = true;
+        const correct =
+            quizData[current].correct;
 
-    const correct = quizData[current].correct;
-    const answers = quizData[current].answers;
+        let percentages = [0, 0, 0, 0];
 
-    let selected;
+        percentages[correct] =
+            45 + Math.floor(Math.random() * 16);
 
-    if (Math.random() < 0.6) {
+        let remaining =
+            100 - percentages[correct];
 
-        selected = correct;
+        let wrong =
+            [0, 1, 2, 3].filter(
+                i => i !== correct
+            );
 
-    } else {
+        percentages[wrong[0]] =
+            Math.floor(remaining * 0.4);
 
-        const wrong =
-            [0,1,2,3].filter(i => i !== correct);
+        percentages[wrong[1]] =
+            Math.floor(remaining * 0.35);
 
-        selected =
-            wrong[Math.floor(Math.random() * wrong.length)];
+        percentages[wrong[2]] =
+            remaining -
+            percentages[wrong[0]] -
+            percentages[wrong[1]];
 
-    }
+        let result =
+            "📊 Ask the Audience\n\n";
 
-    alert(
-        "📞 Phone a Friend\n\n" +
-        "Mhmm... I think it is " +
-        answers[selected]
-    );
+        answers.forEach((answer, index) => {
 
-});
+            result +=
+                answer +
+                ": " +
+                percentages[index] +
+                "%\n";
 
-/* Ask the Audience */
+        });
 
-audienceBtn.addEventListener("click", () => {
-
-    if (usedAudience) return;
-
-    usedAudience = true;
-    audienceBtn.disabled = true;
-
-    const answers = quizData[current].answers;
-    const correct = quizData[current].correct;
-
-    let percentages = [10,10,10,10];
-
-    percentages[correct] =
-        45 + Math.floor(Math.random() * 16);
-
-    let remaining =
-        100 - percentages[correct];
-
-    let wrong =
-        [0,1,2,3].filter(i => i !== correct);
-
-    percentages[wrong[0]] =
-        Math.floor(remaining * 0.4);
-
-    percentages[wrong[1]] =
-        Math.floor(remaining * 0.35);
-
-    percentages[wrong[2]] =
-        remaining -
-        percentages[wrong[0]] -
-        percentages[wrong[1]];
-
-    let result =
-        "📊 Ask the Audience\n\n";
-
-    answers.forEach((answer, index) => {
-
-        result +=
-            `${answer}: ${percentages[index]}%\n`;
+        alert(result);
 
     });
 
-    alert(result);
-
-});
-
+}
 n.addEventListener("click", () => {
 
     current++;
